@@ -19,6 +19,7 @@ JELASSI Meriem
 **Reinforcement Learning from Human Feedback (RLHF)**
    - Supervised Fine-Tuning
    - Reward Model Training
+   - Reinforcement Optimization
    - Benefits and Limitations
 
 **Conclusion**
@@ -55,31 +56,31 @@ These two modules work together seamlessly. For instance, in machine translation
 
 ## Attention Mechanism
 
-The self-attention mechanism is the basis of Transformers. It allows the model to assign relative importance to each token in an input sequence by analyzing the relationships between the tokens. This mechanism relies on three types of vectors derived from the input tokens: query (\(Q\)), key (\(K\)), and value (\(V\)) vectors. These vectors are computed by multiplying the embeddings of the tokens with learned weight matrices, as shown below:
+The self-attention mechanism is the basis of Transformers. It allows the model to assign relative importance to each token in an input sequence by analyzing the relationships between the tokens. This mechanism relies on three types of vectors derived from the input tokens: query ($Q$), key ($K$), and value ($V$) vectors. These vectors are computed by multiplying the embeddings of the tokens with learned weight matrices, as shown below:
 
-\[
+$$
 Q = XW^Q, \quad K = XW^K, \quad V = XW^V
-\]
+$$
 
-Here, \(X\) represents the token embeddings, and \(W^Q\), \(W^K\), \(W^V\) are weight matrices learned specifically for each type of vector.
+Here, $X$ represents the token embeddings, and $W^Q$, $W^K$, $W^V$ are weight matrices learned specifically for each type of vector.
 
-Once these vectors are computed, the model calculates the similarity between each query (\(Q\)) and each key (\(K\)) to determine their relationship. These similarities, referred to as attention scores, are computed by taking the dot product of \(Q\) and \(K\), normalized by the square root of the dimension of the key vectors (\(d_k\)) to avoid extreme values. The formula for attention scores is:
+Once these vectors are computed, the model calculates the similarity between each query ($Q$) and each key ($K$) to determine their relationship. These similarities, referred to as attention scores, are computed by taking the dot product of $Q$ and $K$, normalized by the square root of the dimension of the key vectors ($d_k$) to avoid extreme values. The formula for attention scores is:
 
-\[
+$$
 \text{Attention Score} = \frac{QK^T}{\sqrt{d_k}}
-\]
+$$
 
 To make these scores comparable and usable, they are converted into probabilities using the softmax function. This normalization ensures that the scores for each token sum to 1, making them interpretable as relative weights. The softmax function is defined as:
 
-\[
+$$
 \text{Softmax}(\text{Attention Score}) = \frac{\exp(\text{Attention Score})}{\sum \exp(\text{Attention Score})}
-\]
+$$
 
-Finally, the output of the attention mechanism is computed by combining these probabilities as weights with the value vectors (\(V\)). This produces a rich contextual representation where each token is influenced by its relationships with other tokens in the sequence. The output is expressed by the following formula:
+Finally, the output of the attention mechanism is computed by combining these probabilities as weights with the value vectors ($V$). This produces a rich contextual representation where each token is influenced by its relationships with other tokens in the sequence. The output is expressed by the following formula:
 
-\[
+$$
 \text{Output} = \text{Softmax}(\text{Attention Score}) \cdot V
-\]
+$$
 
 This process is repeated for each token, enabling the model to capture complex relationships, whether they are local or distant, within the input sequences.
 
@@ -87,17 +88,17 @@ This process is repeated for each token, enabling the model to capture complex r
 
 To better capture the diversity of relationships in the data, Transformers use a multi-head attention mechanism. Instead of extracting a single contextual relationship for each token, multiple independent attention heads are computed simultaneously. Each head focuses on a different aspect of the interactions between tokens, allowing the model to capture multiple perspectives in parallel.
 
-Each head applies the self-attention mechanism, with its own set of weight matrices for \(Q\), \(K\), and \(V\). The output of each head is then concatenated and projected into a common space using a final projection matrix (\(W^O\)). This operation is described by the following formula:
+Each head applies the self-attention mechanism, with its own set of weight matrices for $Q$, $K$, and $V$. The output of each head is then concatenated and projected into a common space using a final projection matrix ($W^O$). This operation is described by the following formula:
 
-\[
+$$
 \text{MultiHead}(Q, K, V, \text{Mask}) = \text{Concat}(\text{head}_1, \dots, \text{head}_h)W^O
-\]
+$$
 
-where each head (\(\text{head}_i\)) is defined as:
+where each head ($\text{head}_i$) is defined as:
 
-\[
+$$
 \text{head}_i = \text{Attention}(QW^Q_i, KW^K_i, VW^V_i, \text{Mask})
-\]
+$$
 
 The multi-head attention mechanism enriches the model by enabling it to explore multiple aspects of contextual relationships. For example, in a sentence, some heads might focus on syntactic relationships, while others explore semantic ones.
 
@@ -109,11 +110,11 @@ Causal Transformers, such as GPT and LLaMA, represent a class of autoregressive 
 
 Causal Transformers operate autoregressively, meaning they predict each token in a sequence based solely on the preceding tokens. This unidirectional approach respects the temporal or sequential order of the data, ensuring that the model only "sees" past information when generating text. The autoregressive process is mathematically formulated as:
 
-\[
+$$
 P(x_1, x_2, \ldots, x_n) = \prod_{t=1}^n P(x_t | x_1, x_2, \ldots, x_{t-1})
-\]
+$$
 
-Here, \(P(x_t | x_1, x_2, \ldots, x_{t-1})\) represents the probability of the \(t\)-th token given its preceding context. During training, the model learns to maximize the likelihood of the observed sequences under this factorization.
+Here, $P(x_t | x_1, x_2, \ldots, x_{t-1})$ represents the probability of the $t$-th token given its preceding context. During training, the model learns to maximize the likelihood of the observed sequences under this factorization.
 
 The self-attention mechanism is central to this autoregressive process. To enforce causality, a triangular mask is applied to the attention scores, ensuring that tokens can only attend to preceding tokens and not future ones. This causal masking guarantees the unidirectional flow of information, a requirement for tasks like text generation.
 
@@ -123,9 +124,9 @@ Causal Transformers are trained using self-supervised learning, a methodology th
 
 The training loss for causal language modeling is defined as:
 
-\[
+$$
 \mathcal{L} = -\sum_{t=1}^n \log P(x_t | x_1, x_2, \ldots, x_{t-1})
-\]
+$$
 
 During training, the model adjusts its parameters to minimize this loss, learning to generate coherent and contextually accurate text. This self-supervised approach enables the model to leverage massive amounts of unstructured data, capturing complex language patterns, syntax, and semantics.
 
@@ -141,11 +142,28 @@ The RLHF pipeline begins with a supervised fine-tuning phase. In this step, the 
 
 After supervised fine-tuning, a reward model is trained to predict human preferences. This model plays a critical role in the RLHF pipeline by evaluating the quality of the responses generated by the language model. Human annotators compare multiple responses and indicate which one they prefer. These preferences are then used to train the reward model, which assigns a score to each possible response. The training is guided by the following loss function:
 
-\[
+$$
 \text{Loss}(r_\theta) = -\log(\sigma(r_\theta(x, y_i) - r_\theta(x, y_{1-i})))
-\]
+$$
 
-Here, \(y_i\) is the preferred response, \(y_{1-i}\) is the rejected response, and \(\sigma\) is the sigmoid function. This step captures human preferences in a quantifiable framework, enabling the model to align its outputs accordingly.
+Here, $y_i$ is the preferred response, $y_{1-i}$ is the rejected response, and $\sigma$ is the sigmoid function. This step captures human preferences in a quantifiable framework, enabling the model to align its outputs accordingly.
+
+## Reinforcement Optimization
+
+The third phase of the RLHF pipeline relies on reinforcement learning. In this step, the language model adjusts its weights to maximize the reward scores assigned by the reward model. Algorithms like Proximal Policy Optimization (PPO) are commonly used to stabilize this optimization phase. PPO balances efficiency and stability by limiting excessive updates through a clipping mechanism. The PPO objective function is expressed as:
+
+$$
+\mathcal{L}_{\text{CLIP}}(\theta) = \mathbb{E}_t \left[ \min \left(r_t(\theta) A_t, \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) A_t \right) \right]
+$$
+
+Here, $ r_t(\theta) $ represents the probability ratio between the current and previous policies, $ A_t $ is the estimated advantage, and $ \epsilon $ is a parameter controlling the allowable range of updates. Additionally, a KL-divergence regularization term is often added to prevent the optimized policy from deviating too far from the initial policy:
+
+$$
+r_{\text{total}} = r_{\text{PM}} - \lambda_{\text{KL}} D_{\text{KL}}(\pi \| \pi_0)
+$$
+
+This phase allows the model to generate responses that better align with human preferences while maintaining stability and diversity in behaviors.
+
 
 ## Benefits and Limitations
 
