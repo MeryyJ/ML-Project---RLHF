@@ -1,26 +1,30 @@
-<div style="text-align: center; padding: 20px; background-color: #4CAF50; color: white; font-size: 36px; font-weight: bold; border-radius: 10px;">
-    ML Project - RLHF
-</div>
+# **ML Project - RLHF**
+JELASSI Meriem
 
-<div style="text-align: center; font-size: 20px; margin-top: 10px;">
-    JELASSI Meriem
-</div>
 ---
+
 # Table of Contents
+
 **Introduction**
+
 **Transformers**
    - Encoder-Decoder Architecture
    - Attention Mechanism
    - Multi-Head Attention
+
 **Causal Transformers and Self-Supervised Training**
    - Autoregressive Mechanism
    - Self-Supervised Learning
+
 **Reinforcement Learning from Human Feedback (RLHF)**
    - Supervised Fine-Tuning
    - Reward Model Training
    - Benefits and Limitations
+
 **Conclusion**
+
 **References**
+
 ---
 
 # Introduction
